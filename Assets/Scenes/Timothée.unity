@@ -385,7 +385,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11f7b25336fc474b93f75f52ec3475c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
+  target: {fileID: 1691630144}
   smoothTime: 0.25
 --- !u!1 &792626288
 GameObject:
@@ -701,6 +701,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.duration
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.elasticity
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.punchVector.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.easeCurve.m_Curve.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.easeCurve.m_Curve.Array.data[1].time
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallHitFeedback.easeCurve.m_Curve.Array.data[1].value
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6524352873464829627, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.101311445
@@ -746,6 +770,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+--- !u!4 &1691630144 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6524352873464829627, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+  m_PrefabInstance: {fileID: 1691630143}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1755278366
 GameObject:
   m_ObjectHideFlags: 0
