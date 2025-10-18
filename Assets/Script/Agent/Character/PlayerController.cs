@@ -1,5 +1,6 @@
 using UnityEngine;
 using DG.Tweening;
+using System.Collections;
 
 [System.Serializable]
 public struct FeedbackSettings
@@ -36,6 +37,10 @@ public class PlayerController : MonoBehaviour
     public Transform wallCheck;
     public Vector2 wallCheckSize = new Vector2(0.2f, 0.9f);
 
+    [Header("Wall Jump")]
+    public float wallJumpWindow = 0.2f;
+    public Vector2 wallJumpForce = new Vector2(10f, 18f);
+
     [Header("Feedback Settings")]
     public FeedbackSettings jumpFeedback;
     public FeedbackSettings landFeedback;
@@ -46,13 +51,18 @@ public class PlayerController : MonoBehaviour
     private bool wasGroundedLastFrame;
     private float moveDirection = 1f;
     private OrbController currentOrb = null;
-    private float wallHitCooldown = 0.2f;
+    private float wallHitCooldown = 0.3f;
     private float lastWallHitTime;
+    private bool _canWallJump = false;
+    private Coroutine _wallHitCoroutine;
+    private float baseMoveSpeed;
+    private Coroutine speedBoostCoroutine;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         gameCamera = Camera.main.GetComponent<CameraFollow>();
+        baseMoveSpeed = moveSpeed;
     }
 
     void Update()
@@ -69,6 +79,10 @@ public class PlayerController : MonoBehaviour
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
             }
+            else if (_canWallJump)
+            {
+                PerformWallJump();
+            }
             else if (currentOrb != null)
             {
                 currentOrb.Activate(rb);
@@ -80,15 +94,19 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0, wallLayer);
+
         // --- AIRBORNE WALL CHECK ---
-        if (!isGrounded)
+        if (!isGrounded && isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
         {
-            bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0, wallLayer);
-            if (isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
-            {
-                HandleWallHit();
-            }
+            // Stop any previous coroutine and start a new one.
+            if (_wallHitCoroutine != null) StopCoroutine(_wallHitCoroutine);
+            _wallHitCoroutine = StartCoroutine(WallHitSequence());
+
+            // CRUCIAL FIX: Record the hit time HERE to prevent the coroutine from being spammed.
+            lastWallHitTime = Time.time;
         }
+
         rb.linearVelocity = new Vector2(moveDirection * moveSpeed, rb.linearVelocity.y);
     }
 
@@ -102,34 +120,59 @@ public class PlayerController : MonoBehaviour
                 ContactPoint2D contact = collision.contacts[0];
                 if (Mathf.Abs(contact.normal.x) > 0.5f)
                 {
-                    HandleWallHit();
+                    ReverseDirection();
                 }
             }
         }
     }
 
-    private void HandleWallHit()
+    private void PerformWallJump()
     {
-        moveDirection *= -1f;
-        OnWallHit();
-        lastWallHitTime = Time.time;
-        wallCheck.localPosition = new Vector3(-wallCheck.localPosition.x, wallCheck.localPosition.y, wallCheck.localPosition.z);
-    }
+        _canWallJump = false;
 
+        rb.linearVelocity = new Vector2(wallJumpForce.x * -moveDirection, wallJumpForce.y);
+        ReverseDirection();
+        OnJump(); // Play jump feedback
 
-    // --- ORB INTERACTION METHODS ---
-    public void EnterOrbZone(OrbController orb)
-    {
-        currentOrb = orb;
-    }
-
-    public void ExitOrbZone(OrbController orb)
-    {
-        if (currentOrb == orb)
+        if (_wallHitCoroutine != null)
         {
-            currentOrb = null;
+            StopCoroutine(_wallHitCoroutine);
+            _wallHitCoroutine = null;
         }
     }
+
+    private IEnumerator WallHitSequence()
+    {
+        _canWallJump = true;
+        yield return new WaitForSeconds(wallJumpWindow);
+
+        if (_canWallJump)
+        {
+            _canWallJump = false;
+            ReverseDirection(); // Automatically reverse if player didn't jump.
+        }
+        _wallHitCoroutine = null;
+    }
+
+    /// <summary>
+    /// Handles the logic for reversing direction and playing feedback.
+    /// </summary>
+    private void ReverseDirection()
+    {
+        moveDirection *= -1f;
+        lastWallHitTime = Time.time; // Update cooldown timer
+        wallCheck.localPosition = new Vector3(-wallCheck.localPosition.x, wallCheck.localPosition.y, wallCheck.localPosition.z);
+        OnWallHit(); // Play feedback
+    }
+
+    // --- GAMEPLAY MODIFIERS ---
+    public void ApplySpeedBoost(float amount)
+    {
+        moveSpeed += amount;
+    }
+
+    public void EnterOrbZone(OrbController orb) { currentOrb = orb; }
+    public void ExitOrbZone(OrbController orb) { if (currentOrb == orb) { currentOrb = null; } }
 
     // --- FEEDBACK METHODS ---
     void OnJump()
@@ -169,14 +212,11 @@ public class PlayerController : MonoBehaviour
     // --- VISUAL DEBUGGING ---
     void OnDrawGizmos()
     {
-        // Ground Check Gizmo
         if (groundCheck != null)
         {
             Gizmos.color = Color.red;
             Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
         }
-
-        // Wall Check Gizmo
         if (wallCheck != null)
         {
             Gizmos.color = Color.blue;
