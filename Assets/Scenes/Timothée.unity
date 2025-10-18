@@ -137,7 +137,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &250817442
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -373,7 +373,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 15
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -500,7 +500,7 @@ GameObject:
   - component: {fileID: 714430913}
   m_Layer: 0
   m_Name: CameraParent
-  m_TagString: Untagged
+  m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -534,7 +534,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 1691630144}
-  smoothTime: 0.25
+  smoothTime: 0
 --- !u!1 &792626288
 GameObject:
   m_ObjectHideFlags: 0
@@ -715,11 +715,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -16.53
+      value: -37.2
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.77
+      value: 0.2
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.z
@@ -796,11 +796,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 8.68
+      value: 17.8
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.77
+      value: -0.4
       objectReference: {fileID: 0}
     - target: {fileID: 3383517999492544850, guid: f705895837e8fbf4f99999899bb64583, type: 3}
       propertyPath: m_LocalPosition.z
