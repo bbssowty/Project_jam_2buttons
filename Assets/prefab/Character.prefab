@@ -50,14 +50,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80df82b9995695d47a9ff8960a73ecf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 7
-  jumpForce: 14
+  jumpForce: 20
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
   wallLayer:
     serializedVersion: 2
     m_Bits: 64
+  baseMoveSpeed: 7
+  maxMoveSpeed: 50
+  speedReturnRate: 10
+  moveSpeed: 7
   spriteTransform: {fileID: 1814030907901524046}
   groundCheck: {fileID: 535589389848339311}
   groundCheckSize: {x: 0.8, y: 0.2}
@@ -155,6 +158,7 @@ MonoBehaviour:
       m_RotationOrder: 4
     cameraShakeDuration: 0
     cameraShakeStrength: 0
+  rb: {fileID: 4248501121909220538}
 --- !u!50 &4248501121909220538
 Rigidbody2D:
   serializedVersion: 5
@@ -510,10 +514,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 520f2072ce13d5b42bcc245249e5e03f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunSpriteTransform: {fileID: 6706550403240500495}
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: 1104774201951284116, guid: 47b5dc772324336428b7d6bced6c566b, type: 3}
   firePoint: {fileID: 8639318586866618928}
-  fireRate: 2
+  fireRate: 20
+  _mousePosition: {x: 0, y: 0}
 --- !u!1 &9056134414795222939
 GameObject:
   m_ObjectHideFlags: 0
