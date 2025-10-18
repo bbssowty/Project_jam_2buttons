@@ -94,20 +94,32 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0, wallLayer);
-
-        // --- AIRBORNE WALL CHECK ---
-        if (!isGrounded && isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
-        {
-            // Stop any previous coroutine and start a new one.
-            if (_wallHitCoroutine != null) StopCoroutine(_wallHitCoroutine);
-            _wallHitCoroutine = StartCoroutine(WallHitSequence());
-
-            // CRUCIAL FIX: Record the hit time HERE to prevent the coroutine from being spammed.
-            lastWallHitTime = Time.time;
-        }
-
+        // --- Move player ---
         rb.linearVelocity = new Vector2(moveDirection * moveSpeed, rb.linearVelocity.y);
+
+        // --- Wall check ---
+        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
+
+        if (isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
+        {
+            // Check if player is moving toward the wall
+            RaycastHit2D hit = Physics2D.BoxCast(
+                wallCheck.position,
+                wallCheckSize,
+                0f,
+                Vector2.right * moveDirection,
+                0.05f,   // very small distance
+                wallLayer
+            );
+
+            if (hit.collider != null)
+            {
+                // Start wall hit sequence only if we are actually touching a wall in the moving direction
+                if (_wallHitCoroutine != null) StopCoroutine(_wallHitCoroutine);
+                _wallHitCoroutine = StartCoroutine(WallHitSequence());
+                lastWallHitTime = Time.time;
+            }
+        }
     }
 
     // --- GROUNDED WALL CHECK ---
@@ -144,13 +156,32 @@ public class PlayerController : MonoBehaviour
     private IEnumerator WallHitSequence()
     {
         _canWallJump = true;
+
         yield return new WaitForSeconds(wallJumpWindow);
 
-        if (_canWallJump)
+        // Confirm still touching wall before reversing
+        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
+        if (_canWallJump && isTouchingWall)
         {
             _canWallJump = false;
-            ReverseDirection(); // Automatically reverse if player didn't jump.
+
+            // Only reverse if velocity is toward the wall
+            RaycastHit2D hit = Physics2D.BoxCast(
+                wallCheck.position,
+                wallCheckSize,
+                0f,
+                Vector2.right * moveDirection,
+                0.05f,
+                wallLayer
+            );
+
+            if (hit.collider != null)
+            {
+                ReverseDirection();
+                lastWallHitTime = Time.time;
+            }
         }
+
         _wallHitCoroutine = null;
     }
 
