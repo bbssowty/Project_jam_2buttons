@@ -45,6 +45,8 @@ public class PlayerController : MonoBehaviour
     [Header("Wall Jump")]
     public float wallJumpWindow = 0.2f;
     public Vector2 wallJumpForce = new Vector2(10f, 18f);
+    [Tooltip("Tolerance time after leaving ground to allow wall jump")]
+    public float groundedTolerance = 0.1f;
 
     [Header("Feedback Settings")]
     public FeedbackSettings jumpFeedback;
@@ -56,6 +58,7 @@ public class PlayerController : MonoBehaviour
 
     private bool isGrounded;
     private bool wasGroundedLastFrame;
+    private float timeSinceGrounded = 0f;
     private float moveDirection = 1f;
     private OrbController currentOrb = null;
     private float wallHitCooldown = 0.3f;
@@ -75,8 +78,16 @@ public class PlayerController : MonoBehaviour
         // --- Ground Check ---
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
 
-        if (isGrounded && !wasGroundedLastFrame)
-            OnLand();
+        if (isGrounded)
+        {
+            timeSinceGrounded = 0f;
+            if (!wasGroundedLastFrame)
+                OnLand();
+        }
+        else
+        {
+            timeSinceGrounded += Time.deltaTime;
+        }
         wasGroundedLastFrame = isGrounded;
 
         // --- Jump Input ---
@@ -87,7 +98,7 @@ public class PlayerController : MonoBehaviour
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
             }
-            else if (_canWallJump)
+            else if (_canWallJump && timeSinceGrounded > groundedTolerance)
             {
                 PerformWallJump();
             }
