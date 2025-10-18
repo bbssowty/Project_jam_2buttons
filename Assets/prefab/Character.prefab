@@ -59,14 +59,14 @@ MonoBehaviour:
     m_Bits: 64
   baseMoveSpeed: 7
   maxMoveSpeed: 50
-  speedReturnRate: 10
+  speedReturnRate: 5
   moveSpeed: 7
   spriteTransform: {fileID: 1814030907901524046}
   groundCheck: {fileID: 535589389848339311}
   groundCheckSize: {x: 0.8, y: 0.2}
   wallCheck: {fileID: 3338876749517460414}
   wallCheckSize: {x: 1, y: 0.8}
-  wallJumpWindow: 0.08
+  wallJumpWindow: 0.1
   wallJumpForce: {x: 10, y: 18}
   jumpFeedback:
     duration: 0.3
@@ -516,7 +516,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 1104774201951284116, guid: 47b5dc772324336428b7d6bced6c566b, type: 3}
   firePoint: {fileID: 8639318586866618928}
-  fireRate: 20
+  fireRate: 5
   _mousePosition: {x: 0, y: 0}
 --- !u!1 &9056134414795222939
 GameObject:
