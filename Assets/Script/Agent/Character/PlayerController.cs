@@ -40,8 +40,16 @@ public class PlayerController : MonoBehaviour
     private CameraFollow gameCamera;
 
     [Header("Ground Check")]
+    [Tooltip("An empty object positioned where the ground check should occur.")]
     public Transform groundCheck;
-    public float checkRadius = 0.2f;
+    [Tooltip("The size of the box used to detect ground.")]
+    public Vector2 groundCheckSize = new Vector2(0.9f, 0.2f);
+
+    [Header("Wall Check")]
+    [Tooltip("An empty object positioned where the wall check should occur.")]
+    public Transform wallCheck;
+    [Tooltip("The size of the box used to detect walls.")]
+    public Vector2 wallCheckSize = new Vector2(0.2f, 0.9f);
 
     [Header("Feedback Settings")]
     public FeedbackSettings jumpFeedback;
@@ -52,96 +60,78 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private bool isGrounded;
     private bool wasGroundedLastFrame;
-    private float moveDirection = 1f; // 1 for right, -1 for left
-    private OrbController currentOrb = null; // Tracks the orb we are currently in
+    private float moveDirection = 1f;
+    private OrbController currentOrb = null;
+
+    // Cooldown to prevent rapid direction changes when stuck to a wall
+    private float wallHitCooldown = 0.2f;
+    private float lastWallHitTime;
 
     void Start()
     {
-        // Get component references at the start
         rb = GetComponent<Rigidbody2D>();
-        // Find the main camera and get its follow script
         gameCamera = Camera.main.GetComponent<CameraFollow>();
     }
 
     void Update()
     {
-        // Perform the ground check every frame
-        isGrounded = Physics2D.OverlapCircle(groundCheck.position, checkRadius, groundLayer);
+        // Ground check is performed at the position of the 'groundCheck' transform
+        isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
 
-        // --- Landing Detection ---
-        // Check if we were in the air last frame but are on the ground now
         if (isGrounded && !wasGroundedLastFrame)
         {
             OnLand();
         }
-        // Update the state for the next frame's check
         wasGroundedLastFrame = isGrounded;
 
-        // --- Modified Jump Logic ---
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
             {
-                // Standard ground jump
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
             }
-            else if (currentOrb != null) // If not grounded, check if we are in an orb's zone
+            else if (currentOrb != null)
             {
-                // Orb jump!
-                currentOrb.Activate(rb); // Tell the orb to activate and pass our Rigidbody
-                OnJump(); // We can reuse the same jump feedback
-                currentOrb = null; // The orb is used, so clear the reference
+                currentOrb.Activate(rb);
+                OnJump();
+                currentOrb = null;
             }
         }
     }
 
     void FixedUpdate()
     {
-        // Apply constant horizontal movement in the physics update
+        // --- Active Wall Check with Cooldown ---
+        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0, wallLayer);
+
+
+        // --- ADD THIS LINE ---
+        Debug.Log("Is Touching Wall: " + isTouchingWall);
+        // Only allow a direction change if enough time has passed since the last one
+        if (isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
+        {
+            moveDirection *= -1f;
+            OnWallHit();
+            lastWallHitTime = Time.time; // Record the time of this hit
+
+            // Flip the wall check position to the other side
+            wallCheck.localPosition = new Vector3(-wallCheck.localPosition.x, wallCheck.localPosition.y, wallCheck.localPosition.z);
+        }
+
+        // Apply constant movement
         rb.linearVelocity = new Vector2(moveDirection * moveSpeed, rb.linearVelocity.y);
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // Check if the object we collided with is on the Wall layer
-        if ((wallLayer.value & (1 << collision.gameObject.layer)) > 0)
-        {
-            // Reverse direction and trigger wall hit feedback
-            moveDirection *= -1f;
-            OnWallHit();
-        }
-    }
+    // ORB INTERACTION METHODS
+    public void EnterOrbZone(OrbController orb) { currentOrb = orb; }
+    public void ExitOrbZone(OrbController orb) { if (currentOrb == orb) { currentOrb = null; } }
 
-    // --- ORB INTERACTION METHODS ---
-
-    /// <summary>
-    /// Called by an orb when the player enters its trigger.
-    /// </summary>
-    public void EnterOrbZone(OrbController orb)
-    {
-        currentOrb = orb;
-    }
-
-    /// <summary>
-    /// Called by an orb when the player exits its trigger.
-    /// </summary>
-    public void ExitOrbZone(OrbController orb)
-    {
-        // Only clear the currentOrb if it's the one we are actually exiting.
-        // This prevents bugs if trigger zones overlap.
-        if (currentOrb == orb)
-        {
-            currentOrb = null;
-        }
-    }
-
-    // --- FEEDBACK METHODS ---
-
+    // FEEDBACK METHODS
     void OnJump()
     {
         spriteTransform.DOKill();
-        spriteTransform.localScale = Vector3.one; // Reset scale
+        spriteTransform.localScale = Vector3.one;
         spriteTransform.DOPunchScale(jumpFeedback.punchVector, jumpFeedback.duration, 1, jumpFeedback.elasticity)
                        .SetEase(jumpFeedback.easeCurve);
     }
@@ -149,7 +139,7 @@ public class PlayerController : MonoBehaviour
     void OnLand()
     {
         spriteTransform.DOKill();
-        spriteTransform.localScale = Vector3.one; // Reset scale
+        spriteTransform.localScale = Vector3.one;
         spriteTransform.DOPunchScale(landFeedback.punchVector, landFeedback.duration, 1, landFeedback.elasticity)
                        .SetEase(landFeedback.easeCurve);
 
@@ -160,7 +150,7 @@ public class PlayerController : MonoBehaviour
     void OnWallHit()
     {
         spriteTransform.DOKill();
-        spriteTransform.localScale = Vector3.one; // Reset scale
+        spriteTransform.localScale = Vector3.one;
 
         Vector3 directionalPunch = wallHitFeedback.punchVector;
         directionalPunch.x *= -moveDirection;
@@ -170,5 +160,23 @@ public class PlayerController : MonoBehaviour
 
         if (gameCamera != null)
             gameCamera.TriggerShake(wallHitFeedback.cameraShakeDuration, wallHitFeedback.cameraShakeStrength);
+    }
+
+    // VISUAL DEBUGGING
+    void OnDrawGizmos()
+    {
+        // Ground Check Gizmo
+        if (groundCheck != null)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+        }
+
+        // Wall Check Gizmo
+        if (wallCheck != null)
+        {
+            Gizmos.color = Color.blue;
+            Gizmos.DrawWireCube(wallCheck.position, wallCheckSize);
+        }
     }
 }
