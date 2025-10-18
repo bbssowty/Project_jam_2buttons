@@ -18,12 +18,17 @@ public struct FeedbackSettings
 public class PlayerController : MonoBehaviour
 {
     [Header("Core Mechanics")]
-    public float moveSpeed = 7f;
     public float jumpForce = 14f;
     [Tooltip("Set this to everything EXCEPT the 'Player' layer.")]
     public LayerMask groundLayer;
     [Tooltip("Set this to everything EXCEPT the 'Player' layer.")]
     public LayerMask wallLayer;
+
+    [Header("Speed Settings")]
+    public float baseMoveSpeed = 7f;       // default walking speed
+    public float maxMoveSpeed = 12f;       // maximum speed
+    public float speedReturnRate = 2f;     // units per second to return to base speed
+    public float moveSpeed;                // current move speed
 
     [Header("References")]
     public Transform spriteTransform;
@@ -46,7 +51,9 @@ public class PlayerController : MonoBehaviour
     public FeedbackSettings landFeedback;
     public FeedbackSettings wallHitFeedback;
 
+    [Header("Internal References")]
     public Rigidbody2D rb;
+
     private bool isGrounded;
     private bool wasGroundedLastFrame;
     private float moveDirection = 1f;
@@ -55,23 +62,24 @@ public class PlayerController : MonoBehaviour
     private float lastWallHitTime;
     private bool _canWallJump = false;
     private Coroutine _wallHitCoroutine;
-    private float baseMoveSpeed;
-    private Coroutine speedBoostCoroutine;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         gameCamera = Camera.main.GetComponent<CameraFollow>();
-        baseMoveSpeed = moveSpeed;
+        moveSpeed = baseMoveSpeed;
     }
 
     void Update()
     {
+        // --- Ground Check ---
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
 
-        if (isGrounded && !wasGroundedLastFrame) OnLand();
+        if (isGrounded && !wasGroundedLastFrame)
+            OnLand();
         wasGroundedLastFrame = isGrounded;
 
+        // --- Jump Input ---
         if (Input.GetButtonDown("Jump"))
         {
             if (isGrounded)
@@ -97,24 +105,35 @@ public class PlayerController : MonoBehaviour
         // --- Move player ---
         rb.linearVelocity = new Vector2(moveDirection * moveSpeed, rb.linearVelocity.y);
 
+        // --- Gradually return speed to base ---
+        if (moveSpeed > baseMoveSpeed)
+        {
+            moveSpeed -= speedReturnRate * Time.fixedDeltaTime;
+            if (moveSpeed < baseMoveSpeed) moveSpeed = baseMoveSpeed;
+        }
+        else if (moveSpeed < baseMoveSpeed)
+        {
+            moveSpeed += speedReturnRate * Time.fixedDeltaTime;
+            if (moveSpeed > baseMoveSpeed) moveSpeed = baseMoveSpeed;
+        }
+
         // --- Wall check ---
         bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
 
         if (isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
         {
-            // Check if player is moving toward the wall
+            // Only reverse if moving toward the wall
             RaycastHit2D hit = Physics2D.BoxCast(
                 wallCheck.position,
                 wallCheckSize,
                 0f,
                 Vector2.right * moveDirection,
-                0.05f,   // very small distance
+                0.05f,
                 wallLayer
             );
 
             if (hit.collider != null)
             {
-                // Start wall hit sequence only if we are actually touching a wall in the moving direction
                 if (_wallHitCoroutine != null) StopCoroutine(_wallHitCoroutine);
                 _wallHitCoroutine = StartCoroutine(WallHitSequence());
                 lastWallHitTime = Time.time;
@@ -122,17 +141,24 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // --- GROUNDED WALL CHECK ---
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (isGrounded)
+        if ((wallLayer.value & (1 << collision.gameObject.layer)) == 0) return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
         {
-            if ((wallLayer.value & (1 << collision.gameObject.layer)) > 0 && Time.time > lastWallHitTime + wallHitCooldown)
+            // Only consider mostly horizontal collisions
+            if (Mathf.Abs(contact.normal.x) > 0.7f)
             {
-                ContactPoint2D contact = collision.contacts[0];
-                if (Mathf.Abs(contact.normal.x) > 0.5f)
+                // Only reverse if moving toward the wall
+                if (Mathf.Sign(moveDirection) != Mathf.Sign(contact.normal.x))
                 {
-                    ReverseDirection();
+                    if (Time.time > lastWallHitTime + wallHitCooldown)
+                    {
+                        ReverseDirection();
+                        lastWallHitTime = Time.time;
+                        break; // Only reverse once per collision
+                    }
                 }
             }
         }
@@ -144,7 +170,7 @@ public class PlayerController : MonoBehaviour
 
         rb.linearVelocity = new Vector2(wallJumpForce.x * -moveDirection, wallJumpForce.y);
         ReverseDirection();
-        OnJump(); // Play jump feedback
+        OnJump();
 
         if (_wallHitCoroutine != null)
         {
@@ -165,7 +191,6 @@ public class PlayerController : MonoBehaviour
         {
             _canWallJump = false;
 
-            // Only reverse if velocity is toward the wall
             RaycastHit2D hit = Physics2D.BoxCast(
                 wallCheck.position,
                 wallCheckSize,
@@ -185,27 +210,24 @@ public class PlayerController : MonoBehaviour
         _wallHitCoroutine = null;
     }
 
-    /// <summary>
-    /// Handles the logic for reversing direction and playing feedback.
-    /// </summary>
     private void ReverseDirection()
     {
         moveDirection *= -1f;
-        lastWallHitTime = Time.time; // Update cooldown timer
+        lastWallHitTime = Time.time;
+
         wallCheck.localPosition = new Vector3(-wallCheck.localPosition.x, wallCheck.localPosition.y, wallCheck.localPosition.z);
-        OnWallHit(); // Play feedback
+        OnWallHit();
     }
 
-    // --- GAMEPLAY MODIFIERS ---
     public void ApplySpeedBoost(float amount)
     {
         moveSpeed += amount;
+        moveSpeed = Mathf.Min(moveSpeed, maxMoveSpeed);
     }
 
     public void EnterOrbZone(OrbController orb) { currentOrb = orb; }
-    public void ExitOrbZone(OrbController orb) { if (currentOrb == orb) { currentOrb = null; } }
+    public void ExitOrbZone(OrbController orb) { if (currentOrb == orb) currentOrb = null; }
 
-    // --- FEEDBACK METHODS ---
     void OnJump()
     {
         spriteTransform.DOKill();
@@ -220,8 +242,6 @@ public class PlayerController : MonoBehaviour
         spriteTransform.localScale = Vector3.one;
         spriteTransform.DOPunchScale(landFeedback.punchVector, landFeedback.duration, 1, landFeedback.elasticity)
                        .SetEase(landFeedback.easeCurve);
-
-       
     }
 
     void OnWallHit()
@@ -234,10 +254,8 @@ public class PlayerController : MonoBehaviour
 
         spriteTransform.DOPunchScale(directionalPunch, wallHitFeedback.duration, 1, wallHitFeedback.elasticity)
                        .SetEase(wallHitFeedback.easeCurve);
-
     }
 
-    // --- VISUAL DEBUGGING ---
     void OnDrawGizmos()
     {
         if (groundCheck != null)
