@@ -108,6 +108,7 @@ MonoBehaviour:
   damage: 1
   maxBounces: 1
   destroyOnImpact: 0
+  spawnOnDeathPrefab: {fileID: 7778073123219239495, guid: 7c740dabb5e4d0d409604f9963a1ada4, type: 3}
 --- !u!58 &4693591312728932591
 CircleCollider2D:
   m_ObjectHideFlags: 0

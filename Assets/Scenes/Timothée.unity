@@ -1327,6 +1327,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Character
       objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallJumpWindow
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallJumpToleranceAfter
+      value: 0.05
+      objectReference: {fileID: 0}
+    - target: {fileID: 3473346434999584989, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
+      propertyPath: wallJumpToleranceBefore
+      value: 0.05
+      objectReference: {fileID: 0}
     - target: {fileID: 6524352873464829627, guid: e5483938860a0e44daabdb1f0fd0e587, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.101311445
