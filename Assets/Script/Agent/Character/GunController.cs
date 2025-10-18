@@ -14,6 +14,8 @@ public class GunController : MonoBehaviour
 
     private float _nextFireTime = 0f;
     private Vector2 _mousePosition;
+    public Vector2 MousePosition => _mousePosition;
+
 
     void Update()
     {

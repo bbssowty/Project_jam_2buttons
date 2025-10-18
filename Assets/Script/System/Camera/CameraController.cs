@@ -1,30 +1,74 @@
 using UnityEngine;
-using DG.Tweening; // Import the DOTween namespace
+using DG.Tweening;
 
 public class CameraFollow : MonoBehaviour
 {
-    public Transform target;
+    [Header("References")]
+    public Transform target;              // Player transform
+    public GunController gun;             // For aim offset
+
+    [Header("Follow Settings")]
     public float smoothTime = 0.25f;
     private Vector3 velocity = Vector3.zero;
 
+    [Header("Zoom Settings")]
+    public float minZoom = 5f;
+    public float maxZoom = 8f;
+    public float zoomLerpSpeed = 2f;
+    [Tooltip("Maximum player speed used to scale zoom.")]
+    public float playerMaxSpeed = 10f;
+
+    [Header("Aim Offset Settings")]
+    public float baseOffsetDistance = 2f;
+    public float minOffsetDistance = 0.5f;
+    public float maxOffsetDistance = 4f;
+    public float aimOffsetSmooth = 5f;
+
+    private Camera cam;
+    private Vector3 aimOffset = Vector3.zero;
+
+    void Start()
+    {
+        cam = Camera.main;
+        if (target == null)
+            Debug.LogWarning("CameraFollow: Missing target reference!");
+        if (gun == null)
+            Debug.LogWarning("CameraFollow: Missing GunController reference!");
+    }
+
     void LateUpdate()
     {
-        if (target == null) return;
-        Vector3 targetPosition = new Vector3(target.position.x, target.position.y, transform.position.z);
+        if (target == null || gun == null) return;
+
+        // --- 1. Compute player speed (Rigidbody velocity magnitude) ---
+        Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+        float currentSpeed = rb != null ? rb.linearVelocity.magnitude : 0f;
+
+        // --- 2. Zoom based on speed ---
+        float normalizedSpeed = Mathf.Clamp01(currentSpeed / playerMaxSpeed);
+        float targetZoom = Mathf.Lerp(minZoom, maxZoom, normalizedSpeed);
+        cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * zoomLerpSpeed);
+
+        // --- 3. Compute aim offset ---
+        Vector2 aimDirection = (gun.MousePosition - (Vector2)target.position).normalized;
+
+        // Scale offset with camera size
+        float scaledOffset = baseOffsetDistance * (cam.orthographicSize / minZoom);
+        scaledOffset = Mathf.Clamp(scaledOffset, minOffsetDistance, maxOffsetDistance);
+
+        Vector3 desiredOffset = new Vector3(aimDirection.x, aimDirection.y, 0f) * scaledOffset;
+
+        // Smooth aim offset
+        aimOffset = Vector3.Lerp(aimOffset, desiredOffset, Time.deltaTime * aimOffsetSmooth);
+
+        // --- 4. Move camera ---
+        Vector3 targetPosition = new Vector3(target.position.x, target.position.y, transform.position.z) + aimOffset;
         transform.position = Vector3.SmoothDamp(transform.position, targetPosition, ref velocity, smoothTime);
     }
 
-    // --- PUBLIC FEEDBACK METHOD ---
-
-    /// <summary>
-    /// Triggers a camera shake.
-    /// </summary>
-    /// <param name="duration">How long the shake should last.</param>
-    /// <param name="strength">How intense the shake should be.</param>
+    // Optional: shake
     public void TriggerShake(float duration, float strength)
     {
-        // DOShakePosition is a fantastic built-in DOTween function
-        // It's non-additive, so it won't mess up our follow logic.
         transform.DOShakePosition(duration, strength);
     }
 }

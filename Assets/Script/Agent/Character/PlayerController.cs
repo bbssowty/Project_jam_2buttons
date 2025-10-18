@@ -46,7 +46,7 @@ public class PlayerController : MonoBehaviour
     public FeedbackSettings landFeedback;
     public FeedbackSettings wallHitFeedback;
 
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     private bool isGrounded;
     private bool wasGroundedLastFrame;
     private float moveDirection = 1f;
@@ -190,8 +190,7 @@ public class PlayerController : MonoBehaviour
         spriteTransform.DOPunchScale(landFeedback.punchVector, landFeedback.duration, 1, landFeedback.elasticity)
                        .SetEase(landFeedback.easeCurve);
 
-        if (gameCamera != null)
-            gameCamera.TriggerShake(landFeedback.cameraShakeDuration, landFeedback.cameraShakeStrength);
+       
     }
 
     void OnWallHit()
@@ -205,8 +204,6 @@ public class PlayerController : MonoBehaviour
         spriteTransform.DOPunchScale(directionalPunch, wallHitFeedback.duration, 1, wallHitFeedback.elasticity)
                        .SetEase(wallHitFeedback.easeCurve);
 
-        if (gameCamera != null)
-            gameCamera.TriggerShake(wallHitFeedback.cameraShakeDuration, wallHitFeedback.cameraShakeStrength);
     }
 
     // --- VISUAL DEBUGGING ---
