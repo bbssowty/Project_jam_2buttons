@@ -53,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private bool wasGroundedLastFrame;
     private float moveDirection = 1f; // 1 for right, -1 for left
+    private OrbController currentOrb = null; // Tracks the orb we are currently in
 
     void Start()
     {
@@ -76,12 +77,22 @@ public class PlayerController : MonoBehaviour
         // Update the state for the next frame's check
         wasGroundedLastFrame = isGrounded;
 
-        // --- Jumping Input ---
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        // --- Modified Jump Logic ---
+        if (Input.GetButtonDown("Jump"))
         {
-            // Apply jump force and trigger jump feedback
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            OnJump();
+            if (isGrounded)
+            {
+                // Standard ground jump
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+                OnJump();
+            }
+            else if (currentOrb != null) // If not grounded, check if we are in an orb's zone
+            {
+                // Orb jump!
+                currentOrb.Activate(rb); // Tell the orb to activate and pass our Rigidbody
+                OnJump(); // We can reuse the same jump feedback
+                currentOrb = null; // The orb is used, so clear the reference
+            }
         }
     }
 
@@ -102,16 +113,35 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // --- ORB INTERACTION METHODS ---
+
+    /// <summary>
+    /// Called by an orb when the player enters its trigger.
+    /// </summary>
+    public void EnterOrbZone(OrbController orb)
+    {
+        currentOrb = orb;
+    }
+
+    /// <summary>
+    /// Called by an orb when the player exits its trigger.
+    /// </summary>
+    public void ExitOrbZone(OrbController orb)
+    {
+        // Only clear the currentOrb if it's the one we are actually exiting.
+        // This prevents bugs if trigger zones overlap.
+        if (currentOrb == orb)
+        {
+            currentOrb = null;
+        }
+    }
+
     // --- FEEDBACK METHODS ---
 
     void OnJump()
     {
-        // Stop any currently running animations on the sprite
         spriteTransform.DOKill();
-        // ** ADD THIS LINE **
-        spriteTransform.localScale = Vector3.one; // Reset scale before animation
-
-        // Use the parameters from our jumpFeedback struct
+        spriteTransform.localScale = Vector3.one; // Reset scale
         spriteTransform.DOPunchScale(jumpFeedback.punchVector, jumpFeedback.duration, 1, jumpFeedback.elasticity)
                        .SetEase(jumpFeedback.easeCurve);
     }
@@ -119,14 +149,10 @@ public class PlayerController : MonoBehaviour
     void OnLand()
     {
         spriteTransform.DOKill();
-        // ** ADD THIS LINE **
-        spriteTransform.localScale = Vector3.one; // Reset scale before animation
-
-        // Use the parameters from our landFeedback struct
+        spriteTransform.localScale = Vector3.one; // Reset scale
         spriteTransform.DOPunchScale(landFeedback.punchVector, landFeedback.duration, 1, landFeedback.elasticity)
                        .SetEase(landFeedback.easeCurve);
 
-        // Trigger camera shake
         if (gameCamera != null)
             gameCamera.TriggerShake(landFeedback.cameraShakeDuration, landFeedback.cameraShakeStrength);
     }
@@ -134,18 +160,14 @@ public class PlayerController : MonoBehaviour
     void OnWallHit()
     {
         spriteTransform.DOKill();
-        // ** ADD THIS LINE **
-        spriteTransform.localScale = Vector3.one; // Reset scale before animation
+        spriteTransform.localScale = Vector3.one; // Reset scale
 
-        // Create a temporary punch vector that respects the current movement direction
         Vector3 directionalPunch = wallHitFeedback.punchVector;
         directionalPunch.x *= -moveDirection;
 
-        // Use the parameters from our wallHitFeedback struct
         spriteTransform.DOPunchScale(directionalPunch, wallHitFeedback.duration, 1, wallHitFeedback.elasticity)
                        .SetEase(wallHitFeedback.easeCurve);
 
-        // Trigger camera shake
         if (gameCamera != null)
             gameCamera.TriggerShake(wallHitFeedback.cameraShakeDuration, wallHitFeedback.cameraShakeStrength);
     }
