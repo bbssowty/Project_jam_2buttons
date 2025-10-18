@@ -35,7 +35,6 @@ Transform:
   m_Children:
   - {fileID: 535589389848339311}
   - {fileID: 3338876749517460414}
-  - {fileID: 8967247094015079147}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &3473346434999584989
@@ -62,7 +61,7 @@ MonoBehaviour:
   groundCheck: {fileID: 535589389848339311}
   groundCheckSize: {x: 0.8, y: 0.2}
   wallCheck: {fileID: 3338876749517460414}
-  wallCheckSize: {x: 1.05, y: 0.8}
+  wallCheckSize: {x: 1, y: 0.8}
   jumpFeedback:
     duration: 0.3
     punchVector: {x: 0, y: 0.25, z: 0}
@@ -281,37 +280,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!1 &4875810574458381049
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 8967247094015079147}
-  m_Layer: 0
-  m_Name: WallCheckLeft
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &8967247094015079147
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4875810574458381049}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.418, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 6524352873464829627}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5650011035068688602
 GameObject:
   m_ObjectHideFlags: 0
