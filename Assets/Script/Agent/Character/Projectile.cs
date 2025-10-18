@@ -9,6 +9,9 @@ public class Projectile : MonoBehaviour
     public int maxBounces = 3;         // How many times it can bounce
     public bool destroyOnImpact = true;
 
+    [Header("Spawn On Death")]
+    public GameObject spawnOnDeathPrefab; // Prefab to spawn when destroyed
+
     private Vector2 direction;
     private int currentBounces = 0;
 
@@ -28,16 +31,27 @@ public class Projectile : MonoBehaviour
         // Ignore the player
         if (collision.gameObject.CompareTag("Player")) return;
 
-        // Reflect the direction based on the collision normal
+        // Reflect the direction for bouncing
         Vector2 normal = collision.contacts[0].normal;
         direction = Vector2.Reflect(direction, normal).normalized;
 
         currentBounces++;
 
-        // Destroy if exceeded max bounces or on impact
+        // Check if should destroy
         if (currentBounces > maxBounces || destroyOnImpact)
         {
-            Destroy(gameObject);
+            Die();
         }
+    }
+
+    private void Die()
+    {
+        // Spawn the death prefab if assigned
+        if (spawnOnDeathPrefab != null)
+        {
+            Instantiate(spawnOnDeathPrefab, transform.position, Quaternion.identity);
+        }
+
+        Destroy(gameObject);
     }
 }

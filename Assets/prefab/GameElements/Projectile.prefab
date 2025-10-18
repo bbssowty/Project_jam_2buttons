@@ -106,7 +106,7 @@ MonoBehaviour:
   speed: 50
   lifetime: 3
   damage: 1
-  maxBounces: 3
+  maxBounces: 1
   destroyOnImpact: 0
 --- !u!58 &4693591312728932591
 CircleCollider2D:
