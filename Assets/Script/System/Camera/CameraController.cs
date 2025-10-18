@@ -50,7 +50,7 @@ public class CameraFollow : MonoBehaviour
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * zoomLerpSpeed);
 
         // --- 3. Compute aim offset ---
-        Vector2 aimDirection = (gun.MousePosition - (Vector2)target.position).normalized;
+        Vector2 aimDirection = (gun._mousePosition - (Vector2)target.position).normalized;
 
         // Scale offset with camera size
         float scaledOffset = baseOffsetDistance * (cam.orthographicSize / minZoom);
