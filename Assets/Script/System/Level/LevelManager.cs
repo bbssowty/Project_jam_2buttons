@@ -7,8 +7,8 @@ public class LevelManager : MonoBehaviour
     [System.Serializable]
     public struct LevelData
     {
-        public GameObject levelObject;
-        public List<GameObject> targets;
+        public GameObject levelObject;       // The level GameObject
+        public List<GameObject> targets;     // List of all targets in this level
     }
 
     [Header("Levels")]
@@ -32,22 +32,38 @@ public class LevelManager : MonoBehaviour
 
         LevelData current = levels[currentLevelIndex];
 
-        // Remove destroyed targets
+        // Remove null targets from the list (if destroyed for any reason)
         current.targets.RemoveAll(t => t == null);
 
-        if (current.targets.Count == 0)
+        // Check if all targets are inactive
+        bool allTargetsInactive = true;
+        foreach (var t in current.targets)
+        {
+            if (t != null && t.activeSelf)
+            {
+                allTargetsInactive = false;
+                break;
+            }
+        }
+
+        if (allTargetsInactive)
         {
             onLevelCompleted?.Invoke();
 
-            current.levelObject.SetActive(false);
+            if (current.levelObject != null)
+                current.levelObject.SetActive(false);
 
             currentLevelIndex++;
+
             if (currentLevelIndex < levels.Count)
             {
                 LevelData next = levels[currentLevelIndex];
-                next.levelObject.SetActive(true);
-                if (player != null)
-                    next.levelObject.transform.position = player.position;
+                if (next.levelObject != null)
+                {
+                    next.levelObject.SetActive(true);
+                    if (player != null)
+                        next.levelObject.transform.position = player.position;
+                }
             }
         }
     }
@@ -59,6 +75,13 @@ public class LevelManager : MonoBehaviour
         {
             if (level.levelObject != null)
                 level.levelObject.SetActive(false);
+
+            // Reset all targets
+            foreach (var t in level.targets)
+            {
+                if (t != null)
+                    t.GetComponent<DestructibleTarget>()?.ResetTarget();
+            }
         }
 
         // Reset index

@@ -3,12 +3,12 @@ using UnityEngine;
 public class DestructibleTarget : MonoBehaviour
 {
     [Header("Target Settings")]
-    public float maxHealth = 3f;            // How many hits it can take
+    public float maxHealth = 3f;
     private float currentHealth;
 
     [Header("Destruction")]
-    public GameObject onDestroyPrefab;      // Optional: spawn on destruction
-    public bool destroyOnImpact = true;     // Destroy immediately on any projectile hit
+    public GameObject onDestroyPrefab;
+    public bool destroyOnImpact = true;
 
     [Header("Audio")]
     [Tooltip("Sound to play when the target is destroyed.")]
@@ -17,8 +17,9 @@ public class DestructibleTarget : MonoBehaviour
     [Range(0f, 1f)]
     public float destroyVolume = 1f;
 
-    void Start()
+    void OnEnable()
     {
+        // Reset health whenever enabled
         currentHealth = maxHealth;
     }
 
@@ -39,12 +40,12 @@ public class DestructibleTarget : MonoBehaviour
         currentHealth -= amount;
 
         if (currentHealth <= 0f)
-            DestroyTarget();
+            DisableTarget();
     }
 
-    private void DestroyTarget()
+    private void DisableTarget()
     {
-        // Play destruction sound even after destroying this object
+        // Play destruction sound
         if (destroySound != null)
         {
             GameObject tempAudio = new GameObject("TempAudio");
@@ -55,14 +56,21 @@ public class DestructibleTarget : MonoBehaviour
             source.volume = destroyVolume;
             source.Play();
 
-            Destroy(tempAudio, destroySound.length); // Destroy after the clip finishes
+            Destroy(tempAudio, destroySound.length);
         }
 
         // Spawn optional prefab
         if (onDestroyPrefab != null)
             Instantiate(onDestroyPrefab, transform.position, Quaternion.identity);
 
-        // Destroy this target object
-        Destroy(gameObject);
+        // Disable the target instead of destroying it
+        gameObject.SetActive(false);
+    }
+
+    // Public method to reset the target
+    public void ResetTarget()
+    {
+        currentHealth = maxHealth;
+        gameObject.SetActive(true);
     }
 }
