@@ -1,6 +1,5 @@
 using UnityEngine;
 using DG.Tweening;
-using System.Collections;
 
 [System.Serializable]
 public struct FeedbackSettings
@@ -25,10 +24,10 @@ public class PlayerController : MonoBehaviour
     public LayerMask wallLayer;
 
     [Header("Speed Settings")]
-    public float baseMoveSpeed = 7f;       // default walking speed
-    public float maxMoveSpeed = 12f;       // maximum speed
-    public float speedReturnRate = 2f;     // units per second to return to base speed
-    public float moveSpeed;                // current move speed
+    public float baseMoveSpeed = 7f;
+    public float maxMoveSpeed = 12f;
+    public float speedReturnRate = 2f;
+    public float moveSpeed;
 
     [Header("References")]
     public Transform spriteTransform;
@@ -43,13 +42,9 @@ public class PlayerController : MonoBehaviour
     public Vector2 wallCheckSize = new Vector2(0.2f, 0.9f);
 
     [Header("Wall Jump")]
-    public float wallJumpWindow = 0.2f;
     public Vector2 wallJumpForce = new Vector2(10f, 18f);
-    [Tooltip("Tolerance time after leaving ground to allow wall jump")]
-    public float groundedTolerance = 0.1f;
 
     [Header("Coyote Time")]
-    [Tooltip("Grace period after leaving ground where you can still jump")]
     public float coyoteTime = 0.15f;
 
     [Header("Feedback Settings")]
@@ -67,8 +62,8 @@ public class PlayerController : MonoBehaviour
     private OrbController currentOrb = null;
     private float wallHitCooldown = 0.3f;
     private float lastWallHitTime;
-    private bool _canWallJump = false;
-    private Coroutine _wallHitCoroutine;
+    private bool isTouchingWall;
+    private bool hasFlippedSinceLanding = false;
 
     void Start()
     {
@@ -81,12 +76,14 @@ public class PlayerController : MonoBehaviour
     {
         // --- Ground Check ---
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0, groundLayer);
-
         if (isGrounded)
         {
             timeSinceGrounded = 0f;
             if (!wasGroundedLastFrame)
+            {
                 OnLand();
+                hasFlippedSinceLanding = false; // reset flip flag on landing
+            }
         }
         else
         {
@@ -94,18 +91,32 @@ public class PlayerController : MonoBehaviour
         }
         wasGroundedLastFrame = isGrounded;
 
+        // --- Wall Check ---
+        isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
+
+        // --- Wall flip when grounded and touching wall ---
+        if (isGrounded && isTouchingWall && !hasFlippedSinceLanding && Time.time > lastWallHitTime + wallHitCooldown)
+        {
+            ReverseDirection();
+            lastWallHitTime = Time.time;
+            hasFlippedSinceLanding = true; // prevent repeated flips while standing
+        }
+
         // --- Jump Input ---
         if (Input.GetButtonDown("Fire1"))
         {
+            // Ground jump has priority
             if (isGrounded || timeSinceGrounded <= coyoteTime)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
             }
-            else if (_canWallJump && timeSinceGrounded > groundedTolerance)
+            // Wall jump only in air
+            else if (isTouchingWall && !isGrounded)
             {
                 PerformWallJump();
             }
+            // Orb jump
             else if (currentOrb != null)
             {
                 currentOrb.Activate(rb);
@@ -131,98 +142,13 @@ public class PlayerController : MonoBehaviour
             moveSpeed += speedReturnRate * Time.fixedDeltaTime;
             if (moveSpeed > baseMoveSpeed) moveSpeed = baseMoveSpeed;
         }
-
-        // --- Wall check ---
-        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
-
-        if (isTouchingWall && Time.time > lastWallHitTime + wallHitCooldown)
-        {
-            // Only reverse if moving toward the wall
-            RaycastHit2D hit = Physics2D.BoxCast(
-                wallCheck.position,
-                wallCheckSize,
-                0f,
-                Vector2.right * moveDirection,
-                0.05f,
-                wallLayer
-            );
-
-            if (hit.collider != null)
-            {
-                if (_wallHitCoroutine != null) StopCoroutine(_wallHitCoroutine);
-                _wallHitCoroutine = StartCoroutine(WallHitSequence());
-                lastWallHitTime = Time.time;
-            }
-        }
-    }
-
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if ((wallLayer.value & (1 << collision.gameObject.layer)) == 0) return;
-
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            // Only consider mostly horizontal collisions
-            if (Mathf.Abs(contact.normal.x) > 0.7f)
-            {
-                // Only reverse if moving toward the wall
-                if (Mathf.Sign(moveDirection) != Mathf.Sign(contact.normal.x))
-                {
-                    if (Time.time > lastWallHitTime + wallHitCooldown)
-                    {
-                        ReverseDirection();
-                        lastWallHitTime = Time.time;
-                        break; // Only reverse once per collision
-                    }
-                }
-            }
-        }
     }
 
     private void PerformWallJump()
     {
-        _canWallJump = false;
-
         rb.linearVelocity = new Vector2(wallJumpForce.x * -moveDirection, wallJumpForce.y);
         ReverseDirection();
         OnJump();
-
-        if (_wallHitCoroutine != null)
-        {
-            StopCoroutine(_wallHitCoroutine);
-            _wallHitCoroutine = null;
-        }
-    }
-
-    private IEnumerator WallHitSequence()
-    {
-        _canWallJump = true;
-
-        yield return new WaitForSeconds(wallJumpWindow);
-
-        // Confirm still touching wall before reversing
-        bool isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
-        if (_canWallJump && isTouchingWall)
-        {
-            _canWallJump = false;
-
-            RaycastHit2D hit = Physics2D.BoxCast(
-                wallCheck.position,
-                wallCheckSize,
-                0f,
-                Vector2.right * moveDirection,
-                0.05f,
-                wallLayer
-            );
-
-            if (hit.collider != null)
-            {
-                ReverseDirection();
-                lastWallHitTime = Time.time;
-            }
-        }
-
-        _wallHitCoroutine = null;
     }
 
     private void ReverseDirection()

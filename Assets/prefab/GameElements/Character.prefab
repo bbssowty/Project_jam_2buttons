@@ -65,10 +65,8 @@ MonoBehaviour:
   groundCheck: {fileID: 535589389848339311}
   groundCheckSize: {x: 0.8, y: 0.2}
   wallCheck: {fileID: 3338876749517460414}
-  wallCheckSize: {x: 1, y: 0.8}
-  wallJumpWindow: 0.2
+  wallCheckSize: {x: 1.01, y: 0.4}
   wallJumpForce: {x: 10, y: 18}
-  groundedTolerance: 0.1
   coyoteTime: 0.15
   jumpFeedback:
     duration: 0.3
