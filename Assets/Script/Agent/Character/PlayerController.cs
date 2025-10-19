@@ -48,6 +48,10 @@ public class PlayerController : MonoBehaviour
     [Tooltip("Tolerance time after leaving ground to allow wall jump")]
     public float groundedTolerance = 0.1f;
 
+    [Header("Coyote Time")]
+    [Tooltip("Grace period after leaving ground where you can still jump")]
+    public float coyoteTime = 0.15f;
+
     [Header("Feedback Settings")]
     public FeedbackSettings jumpFeedback;
     public FeedbackSettings landFeedback;
@@ -93,7 +97,7 @@ public class PlayerController : MonoBehaviour
         // --- Jump Input ---
         if (Input.GetButtonDown("Fire1"))
         {
-            if (isGrounded)
+            if (isGrounded || timeSinceGrounded <= coyoteTime)
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
