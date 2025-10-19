@@ -3943,27 +3943,32 @@ MonoBehaviour:
   instruments:
     name: Instruments
     source: {fileID: 716676710}
-    volume: 1
+    threshold: 0
+    targetVolume: 0
   drums:
     name: Drums
     source: {fileID: 678015297}
-    volume: 1
+    threshold: 2
+    targetVolume: 0
   bass:
     name: Bass
     source: {fileID: 518247726}
-    volume: 1
+    threshold: 4
+    targetVolume: 0
   melody:
     name: Melody
     source: {fileID: 1746360940}
-    volume: 1
+    threshold: 6
+    targetVolume: 0
   intensity: 0
-  drainRate: 0.1
+  drainRate: 0.05
   fadeDuration: 1
+  maxLayerVolume: 1
   onIncreaseIntensity:
     m_PersistentCalls:
       m_Calls: []
   testIncreaseKey: 32
-  testIncreaseAmount: 0.2
+  testIncreaseAmount: 0
 --- !u!1 &422045845
 GameObject:
   m_ObjectHideFlags: 0
@@ -11786,7 +11791,19 @@ MonoBehaviour:
     - {fileID: 1915252783}
   onLevelCompleted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 397747702}
+        m_TargetAssemblyTypeName: MusicManager, Assembly-CSharp
+        m_MethodName: IncreaseIntensity
+        m_Mode: 4
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 1.9
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onAllLevelsCompleted:
     m_PersistentCalls:
       m_Calls: []
@@ -12324,8 +12341,8 @@ Transform:
   m_GameObject: {fileID: 1165216288}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.116, y: 12.444933, z: 0}
-  m_LocalScale: {x: 3.2320554, y: 0.34981886, z: 1}
+  m_LocalPosition: {x: 1.116, y: 12.2896, z: 0}
+  m_LocalScale: {x: 3.2320554, y: 0.039179713, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1755885171}
@@ -18833,8 +18850,8 @@ Transform:
   m_GameObject: {fileID: 2044836178}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.116, y: 12.444933, z: 0}
-  m_LocalScale: {x: 3.2320554, y: 0.34981886, z: 1}
+  m_LocalPosition: {x: 1.116, y: 12.2896, z: 0}
+  m_LocalScale: {x: 3.2320554, y: 0.039179713, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 552560456}
