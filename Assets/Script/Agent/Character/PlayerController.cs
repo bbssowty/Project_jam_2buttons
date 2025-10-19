@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
         isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
 
         // --- Wall flip when grounded and touching wall ---
-        if (isGrounded && isTouchingWall && !hasFlippedSinceLanding && Time.time > lastWallHitTime + wallHitCooldown)
+        if (isGrounded && isTouchingWall /*&& !hasFlippedSinceLanding && Time.time > lastWallHitTime + wallHitCooldown*/)
         {
             ReverseDirection();
             lastWallHitTime = Time.time;
