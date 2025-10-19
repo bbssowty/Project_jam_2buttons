@@ -161,4 +161,4 @@ MonoBehaviour:
   minOffsetDistance: 0.5
   maxOffsetDistance: 4
   aimOffsetSmooth: 5
-  verticalOffset: 5
+  verticalOffset: 1

@@ -20,6 +20,7 @@ public class LevelManager : MonoBehaviour
 
     [Header("Events")]
     public UnityEvent onLevelCompleted;
+    public UnityEvent onGameFinished;
 
     void Start()
     {
@@ -32,7 +33,7 @@ public class LevelManager : MonoBehaviour
 
         LevelData current = levels[currentLevelIndex];
 
-        // Remove null targets from the list (if destroyed for any reason)
+        // Remove destroyed or null targets
         current.targets.RemoveAll(t => t == null);
 
         // Check if all targets are inactive
@@ -65,12 +66,16 @@ public class LevelManager : MonoBehaviour
                         next.levelObject.transform.position = player.position;
                 }
             }
+            else
+            {
+                // Game finished
+                onGameFinished?.Invoke();
+            }
         }
     }
 
     public void RestartLevels()
     {
-        // Reset all levels
         foreach (var level in levels)
         {
             if (level.levelObject != null)
@@ -80,23 +85,18 @@ public class LevelManager : MonoBehaviour
             foreach (var t in level.targets)
             {
                 if (t != null)
-                    t.GetComponent<DestructibleTarget>()?.ResetTarget();
+                    t.SetActive(true); // reset to active
             }
         }
 
-        // Reset index
         currentLevelIndex = 0;
 
         // Activate first level
-        if (levels.Count > 0)
+        if (levels.Count > 0 && levels[0].levelObject != null)
         {
-            var first = levels[0];
-            if (first.levelObject != null)
-            {
-                first.levelObject.SetActive(true);
-                if (player != null)
-                    first.levelObject.transform.position = player.position;
-            }
+            levels[0].levelObject.SetActive(true);
+            if (player != null)
+                levels[0].levelObject.transform.position = player.position;
         }
     }
 }

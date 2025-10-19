@@ -1,60 +1,39 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.Events;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Timer Settings")]
-    public float timer = 0f;                  // Current time elapsed
-    public bool timerRunning = false;         // Is the timer active
-    public UnityEvent<float> onTimerUpdate;   // Invoked every frame with current time
+    public float timer = 0f;
+    public bool timerRunning = false;
 
-    [Header("UI References")]
-    public TextMeshProUGUI timerText;         // Reference to the TMP text
-
-    [Header("UI Update Settings")]
-    [Tooltip("How often (in seconds) to update the timer text for smoother display.")]
-    public float uiUpdateRate = 0.05f;        // Update every 50ms (20fps)
-
-    private float nextUIUpdateTime = 0f;
+    [Header("UI")]
+    public TextMeshProUGUI timerText; // TMP reference
 
     void Update()
     {
         if (!timerRunning) return;
 
         timer += Time.deltaTime;
-        onTimerUpdate?.Invoke(timer);
 
-        // Update the timer text only at a fixed rate
-        if (Time.time >= nextUIUpdateTime)
+        if (timerText != null)
         {
-            nextUIUpdateTime = Time.time + uiUpdateRate;
-
-            if (timerText != null)
-                timerText.text = FormatTime(timer);
+            timerText.text = FormatTime(timer);
         }
     }
 
-    public void StartTimer()
-    {
-        timerRunning = true;
-        nextUIUpdateTime = 0f; // force immediate update on start
-    }
-
-    public void StopTimer()
-    {
-        timerRunning = false;
-    }
-
+    public void StartTimer() => timerRunning = true;
+    public void StopTimer() => timerRunning = false;
     public void ResetTimer()
     {
         timer = 0f;
-        onTimerUpdate?.Invoke(timer);
-
         if (timerText != null)
             timerText.text = FormatTime(timer);
+    }
 
-        nextUIUpdateTime = 0f;
+    public string GetFormattedTime()
+    {
+        return FormatTime(timer);
     }
 
     private string FormatTime(float time)
