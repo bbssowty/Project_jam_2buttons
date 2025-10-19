@@ -28,7 +28,7 @@ public class GunController : MonoBehaviour
         transform.rotation = Quaternion.Euler(0f, 0f, angle);
 
         // --- Firing Logic ---
-        if (Input.GetButton("Fire1") && Time.time >= _nextFireTime)
+        if (Input.GetButton("Fire2") && Time.time >= _nextFireTime)
         {
             _nextFireTime = Time.time + 1f / fireRate;
             Shoot();

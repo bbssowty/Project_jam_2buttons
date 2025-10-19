@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
         wasGroundedLastFrame = isGrounded;
 
         // --- Jump Input ---
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Fire1"))
         {
             if (isGrounded)
             {
