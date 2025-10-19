@@ -49,14 +49,19 @@ public class CameraFollow : MonoBehaviour
         float targetZoom = Mathf.Lerp(minZoom, maxZoom, normalizedSpeed);
         cam.orthographicSize = Mathf.Lerp(cam.orthographicSize, targetZoom, Time.deltaTime * zoomLerpSpeed);
 
-        // --- 3. Compute aim offset ---
+        // --- 3. Compute horizontal-only aim offset ---
         Vector2 aimDirection = (gun._mousePosition - (Vector2)target.position).normalized;
+
+        // Only use the horizontal component
+        aimDirection.y = 0f;
+        if (aimDirection.magnitude > 0.01f) // prevent zero vector
+            aimDirection.Normalize();
 
         // Scale offset with camera size
         float scaledOffset = baseOffsetDistance * (cam.orthographicSize / minZoom);
         scaledOffset = Mathf.Clamp(scaledOffset, minOffsetDistance, maxOffsetDistance);
 
-        Vector3 desiredOffset = new Vector3(aimDirection.x, aimDirection.y, 0f) * scaledOffset;
+        Vector3 desiredOffset = new Vector3(aimDirection.x, 0f, 0f) * scaledOffset;
 
         // Smooth aim offset
         aimOffset = Vector3.Lerp(aimOffset, desiredOffset, Time.deltaTime * aimOffsetSmooth);
