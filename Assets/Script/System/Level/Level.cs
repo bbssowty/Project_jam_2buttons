@@ -14,11 +14,22 @@ public class Level : MonoBehaviour
 
     [HideInInspector] public bool completed = false;
 
+    // Internal copy of targets to avoid prefab sharing
+    private List<GameObject> _runtimeTargets;
+
     void OnEnable()
     {
-        // When this level becomes active, snap to player position
+        // Make a runtime copy of the target list so each level is independent
+        if (targets != null)
+            _runtimeTargets = new List<GameObject>(targets);
+        else
+            _runtimeTargets = new List<GameObject>();
+
+        // Snap level to player
         if (player != null)
             transform.position = player.position;
+
+        completed = false;
     }
 
     void Update()
@@ -26,10 +37,10 @@ public class Level : MonoBehaviour
         if (completed) return;
 
         // Remove destroyed or missing targets
-        targets.RemoveAll(t => t == null);
+        _runtimeTargets.RemoveAll(t => t == null);
 
         // Check completion
-        if (targets.Count == 0)
+        if (_runtimeTargets.Count == 0)
         {
             completed = true;
             Debug.Log($"{name} completed!");
@@ -37,9 +48,9 @@ public class Level : MonoBehaviour
             // If there's a next level, reactivate it
             if (nextLevel != null)
             {
-                nextLevel.completed = false;          // mark next as active
-                nextLevel.transform.position = player.position;
-                nextLevel.gameObject.SetActive(true);
+                nextLevel.gameObject.SetActive(true);        // activate next level
+                if (nextLevel.player != null)
+                    nextLevel.transform.position = player.position;
             }
 
             // Disable this level object
