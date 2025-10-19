@@ -3,35 +3,79 @@ using UnityEngine.Events;
 
 public class MenuManager : MonoBehaviour
 {
-    [Header("Events")]
-    public UnityEvent onStartGame;
-
     [Header("References")]
-    public GameObject player;
-    public GameObject parentToDisable; // assign the parent object in inspector
+    public GameObject menuParent;      // Menu UI parent
+    public GameObject pauseParent;     // Pause UI parent
+    public GameObject player;          // Player object
+    public UnityEvent onStartGame;     // Event to trigger first level
+    public UnityEvent onRestartGame;   // Event to restart the game
 
-    // Called by UI button
+    private bool isPaused = false;
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape) && pauseParent != null)
+        {
+            TogglePause();
+        }
+    }
+
     public void StartGame()
     {
-        // Hide the parent object
-        if (parentToDisable != null)
-            parentToDisable.SetActive(false);
+        if (menuParent != null)
+            menuParent.SetActive(false);
 
-        // Enable player
         if (player != null)
             player.SetActive(true);
 
-        // Trigger event (for LevelManager to start first level)
         onStartGame?.Invoke();
     }
 
-    // Called by UI button
     public void QuitGame()
     {
 #if UNITY_EDITOR
-        UnityEditor.EditorApplication.isPlaying = false; // Stop play mode
+        UnityEditor.EditorApplication.isPlaying = false;
 #else
-        Application.Quit(); // Quit build
+        Application.Quit();
 #endif
+    }
+
+    public void TogglePause()
+    {
+        if (pauseParent == null) return;
+
+        isPaused = !isPaused;
+        pauseParent.SetActive(isPaused);
+
+        // NO timeScale modification; game continues running
+    }
+
+    public void ResumeGame()
+    {
+        isPaused = false;
+        if (pauseParent != null)
+            pauseParent.SetActive(false);
+        // Game continues running normally
+    }
+
+    public void RestartGame()
+    {
+        ResumeGame();
+
+        if (menuParent != null)
+            menuParent.SetActive(false);
+        if (pauseParent != null)
+            pauseParent.SetActive(false);
+
+        onRestartGame?.Invoke();
+    }
+
+    public void GoBack()
+    {
+        ResumeGame();
+        if (menuParent != null)
+            menuParent.SetActive(false);
+        if (player != null)
+            player.SetActive(true);
     }
 }

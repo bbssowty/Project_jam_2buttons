@@ -2,97 +2,78 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-[System.Serializable]
-public class LevelEntry
-{
-    public GameObject levelObject;        // Parent GameObject for this level
-    public List<GameObject> targets;      // List of all targets in this level
-}
-
 public class LevelManager : MonoBehaviour
 {
-    [Header("Levels in order")]
-    public List<LevelEntry> levels = new List<LevelEntry>();
+    [System.Serializable]
+    public struct LevelData
+    {
+        public GameObject levelObject;
+        public List<GameObject> targets;
+    }
+
+    [Header("Levels")]
+    public List<LevelData> levels = new List<LevelData>();
+    private int currentLevelIndex = 0;
+
+    [Header("Player Reference")]
+    public Transform player;
 
     [Header("Events")]
     public UnityEvent onLevelCompleted;
 
-    private int currentLevelIndex = -1;
-
-    [Header("References")]
-    public Transform player;
-
+    void Start()
+    {
+        RestartLevels();
+    }
 
     void Update()
     {
-        if (currentLevelIndex < 0 || currentLevelIndex >= levels.Count) return;
+        if (currentLevelIndex >= levels.Count) return;
 
-        LevelEntry current = levels[currentLevelIndex];
-        if (current.targets == null || current.targets.Count == 0) return;
+        LevelData current = levels[currentLevelIndex];
 
         // Remove destroyed targets
         current.targets.RemoveAll(t => t == null);
 
-        // Check if level is complete
         if (current.targets.Count == 0)
         {
-            CompleteCurrentLevel();
-        }
-    }
+            onLevelCompleted?.Invoke();
 
-    public void StartFirstLevel()
-    {
-        if (levels.Count == 0) return;
-
-        currentLevelIndex = 0;
-        ActivateLevel(currentLevelIndex);
-    }
-
-    private void ActivateLevel(int index)
-    {
-        if (index < 0 || index >= levels.Count) return;
-
-        LevelEntry entry = levels[index];
-
-        if (entry.levelObject != null)
-        {
-            // Move level to player's position
-            if (player != null)
-                entry.levelObject.transform.position = player.position;
-
-            // Activate level
-            entry.levelObject.SetActive(true);
-        }
-
-        // Ensure all targets are active
-        foreach (var t in entry.targets)
-        {
-            if (t != null)
-                t.SetActive(true);
-        }
-
-        Debug.Log($"Level {index + 1} activated: {entry.levelObject.name}");
-    }
-
-
-    public void CompleteCurrentLevel()
-    {
-        if (currentLevelIndex < 0 || currentLevelIndex >= levels.Count) return;
-
-        LevelEntry current = levels[currentLevelIndex];
-
-        // Deactivate current level
-        if (current.levelObject != null)
             current.levelObject.SetActive(false);
 
-        // Trigger event
-        onLevelCompleted?.Invoke();
+            currentLevelIndex++;
+            if (currentLevelIndex < levels.Count)
+            {
+                LevelData next = levels[currentLevelIndex];
+                next.levelObject.SetActive(true);
+                if (player != null)
+                    next.levelObject.transform.position = player.position;
+            }
+        }
+    }
 
-        // Move to next level
-        currentLevelIndex++;
-        if (currentLevelIndex < levels.Count)
-            ActivateLevel(currentLevelIndex);
-        else
-            Debug.Log("All levels completed!");
+    public void RestartLevels()
+    {
+        // Reset all levels
+        foreach (var level in levels)
+        {
+            if (level.levelObject != null)
+                level.levelObject.SetActive(false);
+        }
+
+        // Reset index
+        currentLevelIndex = 0;
+
+        // Activate first level
+        if (levels.Count > 0)
+        {
+            var first = levels[0];
+            if (first.levelObject != null)
+            {
+                first.levelObject.SetActive(true);
+                if (player != null)
+                    first.levelObject.transform.position = player.position;
+            }
+        }
     }
 }
