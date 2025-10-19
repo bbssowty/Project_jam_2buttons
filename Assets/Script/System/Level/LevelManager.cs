@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [System.Serializable]
 public class LevelData
@@ -10,8 +11,16 @@ public class LevelData
 
 public class LevelManager : MonoBehaviour
 {
+    [Header("Player Reference")]
     public Transform player;               // Player reference
+
+    [Header("Levels")]
     public List<LevelData> levels;         // All levels
+
+    [Header("Events")]
+    public UnityEvent onLevelCompleted;    // Triggered whenever a level is completed
+    public UnityEvent onAllLevelsCompleted; // Triggered when the last level is completed
+
     private int currentLevelIndex = 0;
 
     void Start()
@@ -39,9 +48,22 @@ public class LevelManager : MonoBehaviour
             Debug.Log($"{currentLevel.levelObject.name} completed!");
             currentLevel.levelObject.SetActive(false);
 
+            // Trigger the Unity event for a single level
+            onLevelCompleted?.Invoke();
+
             currentLevelIndex++;
+
             if (currentLevelIndex < levels.Count)
+            {
+                // Activate next level
                 ActivateLevel(currentLevelIndex);
+            }
+            else
+            {
+                // Last level completed
+                Debug.Log("All levels completed!");
+                onAllLevelsCompleted?.Invoke();
+            }
         }
     }
 
