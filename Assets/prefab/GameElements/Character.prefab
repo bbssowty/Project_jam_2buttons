@@ -66,8 +66,9 @@ MonoBehaviour:
   groundCheckSize: {x: 0.8, y: 0.2}
   wallCheck: {fileID: 3338876749517460414}
   wallCheckSize: {x: 1, y: 0.8}
-  wallJumpWindow: 0.3
+  wallJumpWindow: 0.2
   wallJumpForce: {x: 10, y: 18}
+  groundedTolerance: 0.1
   jumpFeedback:
     duration: 0.3
     punchVector: {x: 0, y: 0.25, z: 0}
@@ -182,7 +183,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 1
+  m_Interpolate: 2
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
