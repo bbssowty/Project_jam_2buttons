@@ -18,12 +18,21 @@ public class LevelManager : MonoBehaviour
     [Header("Player Reference")]
     public Transform player;
 
+    [Header("Audio")]
+    public AudioSource audioSource;          // Reference to AudioSource
+    public AudioClip levelCompleteClip;      // Sound played when a level is completed
+    [Range(0.5f, 1.5f)] public float pitchVariation = 0.1f;
+
     [Header("Events")]
     public UnityEvent onLevelCompleted;
     public UnityEvent onGameFinished;
 
     void Start()
     {
+        // Ensure there’s an AudioSource
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
+
         RestartLevels();
     }
 
@@ -50,6 +59,7 @@ public class LevelManager : MonoBehaviour
         if (allTargetsInactive)
         {
             onLevelCompleted?.Invoke();
+            PlayLevelCompleteSound();
 
             if (current.levelObject != null)
                 current.levelObject.SetActive(false);
@@ -97,6 +107,15 @@ public class LevelManager : MonoBehaviour
             levels[0].levelObject.SetActive(true);
             if (player != null)
                 levels[0].levelObject.transform.position = player.position;
+        }
+    }
+
+    private void PlayLevelCompleteSound()
+    {
+        if (audioSource != null && levelCompleteClip != null)
+        {
+            audioSource.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+            audioSource.PlayOneShot(levelCompleteClip);
         }
     }
 }

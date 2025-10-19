@@ -1,0 +1,455 @@
+fileFormatVersion: 2
+guid: 7c21d20f945b3ae4f8e1f5df1de7160d
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 5428803181657089099
+    second: Plan_de_travail_1_0
+  - first:
+      213: 6844711026828606496
+    second: Plan_de_travail_1_1
+  - first:
+      213: -5091730560787582214
+    second: Plan_de_travail_1_2
+  - first:
+      213: -1596752313347422390
+    second: Plan_de_travail_1_3
+  - first:
+      213: -8943827571875918852
+    second: Plan_de_travail_1_4
+  - first:
+      213: -390559917615462458
+    second: Plan_de_travail_1_5
+  - first:
+      213: -3664733116239315202
+    second: Plan_de_travail_1_6
+  - first:
+      213: -5788331578042183650
+    second: Plan_de_travail_1_7
+  - first:
+      213: 2095181700324621566
+    second: Plan_de_travail_1_8
+  - first:
+      213: -7152599279789251075
+    second: Plan_de_travail_1_9
+  - first:
+      213: -2271392147703660087
+    second: Plan_de_travail_1_10
+  - first:
+      213: 532937608169512386
+    second: Plan_de_travail_1_11
+  - first:
+      213: -6705951071759034808
+    second: Plan_de_travail_1_12
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: Plan_de_travail_1_0
+      rect:
+        serializedVersion: 2
+        x: 306
+        y: 107
+        width: 260
+        height: 271
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: b446e2e0bbbf65b40800000000000000
+      internalID: 5428803181657089099
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_1
+      rect:
+        serializedVersion: 2
+        x: 556
+        y: 157
+        width: 93
+        height: 96
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 02c71500a6c4dfe50800000000000000
+      internalID: 6844711026828606496
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_2
+      rect:
+        serializedVersion: 2
+        x: 658
+        y: 160
+        width: 69
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: af27148380a8659b0800000000000000
+      internalID: -5091730560787582214
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_3
+      rect:
+        serializedVersion: 2
+        x: 736
+        y: 160
+        width: 93
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a47c4a02b3237d9e0800000000000000
+      internalID: -1596752313347422390
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_4
+      rect:
+        serializedVersion: 2
+        x: 839
+        y: 161
+        width: 17
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cfbcdf5b53421e380800000000000000
+      internalID: -8943827571875918852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_5
+      rect:
+        serializedVersion: 2
+        x: 866
+        y: 160
+        width: 78
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6c7460ff2d3749af0800000000000000
+      internalID: -390559917615462458
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_6
+      rect:
+        serializedVersion: 2
+        x: 943
+        y: 160
+        width: 94
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efef1f9b5a0442dc0800000000000000
+      internalID: -3664733116239315202
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_7
+      rect:
+        serializedVersion: 2
+        x: 1046
+        y: 160
+        width: 69
+        height: 92
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e109e900917bbafa0800000000000000
+      internalID: -5788331578042183650
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_8
+      rect:
+        serializedVersion: 2
+        x: 1156
+        y: 160
+        width: 90
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efc7fbbd7a4931d10800000000000000
+      internalID: 2095181700324621566
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_9
+      rect:
+        serializedVersion: 2
+        x: 1240
+        y: 161
+        width: 86
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: df56273e9dcdcbc90800000000000000
+      internalID: -7152599279789251075
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_10
+      rect:
+        serializedVersion: 2
+        x: 1333
+        y: 161
+        width: 89
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9c1038240e46a70e0800000000000000
+      internalID: -2271392147703660087
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_11
+      rect:
+        serializedVersion: 2
+        x: 1435
+        y: 161
+        width: 56
+        height: 91
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2cdd3665eef556700800000000000000
+      internalID: 532937608169512386
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Plan_de_travail_1_12
+      rect:
+        serializedVersion: 2
+        x: 1497
+        y: 160
+        width: 64
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 84617a6a70dafe2a0800000000000000
+      internalID: -6705951071759034808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      Plan_de_travail_1_0: 5428803181657089099
+      Plan_de_travail_1_1: 6844711026828606496
+      Plan_de_travail_1_10: -2271392147703660087
+      Plan_de_travail_1_11: 532937608169512386
+      Plan_de_travail_1_12: -6705951071759034808
+      Plan_de_travail_1_2: -5091730560787582214
+      Plan_de_travail_1_3: -1596752313347422390
+      Plan_de_travail_1_4: -8943827571875918852
+      Plan_de_travail_1_5: -390559917615462458
+      Plan_de_travail_1_6: -3664733116239315202
+      Plan_de_travail_1_7: -5788331578042183650
+      Plan_de_travail_1_8: 2095181700324621566
+      Plan_de_travail_1_9: -7152599279789251075
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

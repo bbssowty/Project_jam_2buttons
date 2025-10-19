@@ -52,6 +52,11 @@ public class PlayerController : MonoBehaviour
     public FeedbackSettings landFeedback;
     public FeedbackSettings wallHitFeedback;
 
+    [Header("Audio")]
+    public AudioSource audioSource;        // Reference to AudioSource component
+    public AudioClip jumpClip;             // Jump sound
+    public float pitchVariation = 0.1f;    // +/- pitch variation
+
     [Header("Internal References")]
     public Rigidbody2D rb;
 
@@ -70,6 +75,9 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         gameCamera = Camera.main.GetComponent<CameraFollow>();
         moveSpeed = baseMoveSpeed;
+
+        if (audioSource == null)
+            audioSource = gameObject.AddComponent<AudioSource>();
     }
 
     void Update()
@@ -95,7 +103,7 @@ public class PlayerController : MonoBehaviour
         isTouchingWall = Physics2D.OverlapBox(wallCheck.position, wallCheckSize, 0f, wallLayer);
 
         // --- Wall flip when grounded and touching wall ---
-        if (isGrounded && isTouchingWall /*&& !hasFlippedSinceLanding && Time.time > lastWallHitTime + wallHitCooldown*/)
+        if (isGrounded && isTouchingWall)
         {
             ReverseDirection();
             lastWallHitTime = Time.time;
@@ -110,17 +118,20 @@ public class PlayerController : MonoBehaviour
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 OnJump();
+                PlayJumpSound();
             }
             // Wall jump only in air
             else if (isTouchingWall && !isGrounded)
             {
                 PerformWallJump();
+                PlayJumpSound();
             }
             // Orb jump
             else if (currentOrb != null)
             {
                 currentOrb.Activate(rb);
                 OnJump();
+                PlayJumpSound();
                 currentOrb = null;
             }
         }
@@ -128,10 +139,9 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // --- Move player ---
         rb.linearVelocity = new Vector2(moveDirection * moveSpeed, rb.linearVelocity.y);
 
-        // --- Gradually return speed to base ---
+        // Gradually return speed to base
         if (moveSpeed > baseMoveSpeed)
         {
             moveSpeed -= speedReturnRate * Time.fixedDeltaTime;
@@ -195,6 +205,15 @@ public class PlayerController : MonoBehaviour
 
         spriteTransform.DOPunchScale(directionalPunch, wallHitFeedback.duration, 1, wallHitFeedback.elasticity)
                        .SetEase(wallHitFeedback.easeCurve);
+    }
+
+    private void PlayJumpSound()
+    {
+        if (jumpClip != null && audioSource != null)
+        {
+            audioSource.pitch = 1f + Random.Range(-pitchVariation, pitchVariation);
+            audioSource.PlayOneShot(jumpClip);
+        }
     }
 
     void OnDrawGizmos()
