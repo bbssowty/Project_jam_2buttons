@@ -10,6 +10,13 @@ public class DestructibleTarget : MonoBehaviour
     public GameObject onDestroyPrefab;      // Optional: spawn on destruction
     public bool destroyOnImpact = true;     // Destroy immediately on any projectile hit
 
+    [Header("Audio")]
+    [Tooltip("Sound to play when the target is destroyed.")]
+    public AudioClip destroySound;
+    [Tooltip("Volume for the destruction sound.")]
+    [Range(0f, 1f)]
+    public float destroyVolume = 1f;
+
     void Start()
     {
         currentHealth = maxHealth;
@@ -37,9 +44,25 @@ public class DestructibleTarget : MonoBehaviour
 
     private void DestroyTarget()
     {
+        // Play destruction sound even after destroying this object
+        if (destroySound != null)
+        {
+            GameObject tempAudio = new GameObject("TempAudio");
+            tempAudio.transform.position = transform.position;
+
+            AudioSource source = tempAudio.AddComponent<AudioSource>();
+            source.clip = destroySound;
+            source.volume = destroyVolume;
+            source.Play();
+
+            Destroy(tempAudio, destroySound.length); // Destroy after the clip finishes
+        }
+
+        // Spawn optional prefab
         if (onDestroyPrefab != null)
             Instantiate(onDestroyPrefab, transform.position, Quaternion.identity);
 
+        // Destroy this target object
         Destroy(gameObject);
     }
 }

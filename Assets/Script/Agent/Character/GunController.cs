@@ -14,14 +14,16 @@ public class GunController : MonoBehaviour
     private float _nextFireTime = 0f;
     public Vector2 _mousePosition;
 
-
+    [Header("Audio")]
+    [Tooltip("Audio source used for playing shooting sounds.")]
+    public AudioSource audioSource;
+    [Tooltip("Sound played when firing.")]
+    public AudioClip shootSound;
 
     void Update()
     {
-
         // --- Aiming Logic ---
         _mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
 
         Vector2 lookDirection = _mousePosition - (Vector2)transform.position;
         float angle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg - 90f; // adjust if sprite points up
@@ -47,6 +49,12 @@ public class GunController : MonoBehaviour
         if (projectile != null)
         {
             projectile.Initialize(shootDir);
+        }
+
+        // --- Play Shooting Sound ---
+        if (audioSource != null && shootSound != null)
+        {
+            audioSource.PlayOneShot(shootSound);
         }
     }
 }
